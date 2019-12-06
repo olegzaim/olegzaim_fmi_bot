@@ -48,6 +48,13 @@ public class FmiBotClass extends TelegramLongPollingBot {
             String textNewsInDivTag = splitAndConcatText(contentTextElementsDiv, concatText);
             String textNewsInPTag = splitAndConcatText(contentTextElementsP, concatText);
             textNews = textNewsInDivTag.concat(textNewsInPTag);
+            //4000 byte is a limit of telegram message
+            if (textNews.length() > 4000) {
+                textNews = textNews.substring(0, 4000);
+            }
+            if(textNews.isEmpty()){
+                textNews = "No actual news for speciality: "+specialityName;
+            }
 
             message.setText(textNews);
             System.out.println(message);
@@ -73,9 +80,9 @@ public class FmiBotClass extends TelegramLongPollingBot {
                 if (e.text().length() == 0) {
                     continue;
                 }
-//                    if (!e.text().contains(specialityName) || !e.text().contains(specialityName.toUpperCase())) {
-//                        continue;
-//                    }
+                if (!e.text().contains(specialityName) || !e.text().contains(specialityName.toUpperCase())) {
+                    continue;
+                }
                 if (!validateDate(text)) {
                     continue;
                 }
@@ -108,7 +115,7 @@ public class FmiBotClass extends TelegramLongPollingBot {
         Matcher matcher = pattern.matcher(text);
 
 
-        boolean flag = true;
+        boolean flag = false;
         if (matcher.find()) {
             for (int i = 0; i < text.length(); i++) {
                 if (!text.contains("г.")) {
@@ -128,18 +135,18 @@ public class FmiBotClass extends TelegramLongPollingBot {
                 text = text.replace(removableText, "");
                 text = text.substring(0, text.indexOf("г.")) + text.substring(text.indexOf("г.") + 2);
                 otherDatesInText = otherDatesInText.substring(0, 11);
-                if(!otherDatesInText.matches("^[А-Яа-я].*$")){
+                if (!otherDatesInText.matches("^[А-Яа-я].*$")) {
                     dates.add(new StringBuilder(otherDatesInText).reverse().toString());
                 }
 
             }
 
             for (String dateString : dates) {
-                    if (dateString == null || dateString.matches("^[А-Яа-я].*$" )) {
-                        flag = false;
-                        continue;
-                    }
-                    System.out.println(dateString);
+                if (dateString == null || dateString.matches("^[А-Яа-я].*$")) {
+                    flag = false;
+                    continue;
+                }
+                System.out.println(dateString);
                 try {
                     DateFormat f = new SimpleDateFormat("dd.MM.yyyy");
                     String dateNow = f.format(new Date());
@@ -152,7 +159,7 @@ public class FmiBotClass extends TelegramLongPollingBot {
                     continue;
                 }
                 if (lessonDate.before(now)) {
-                    System.out.println("Skip date:" + lessonDate);
+                    System.out.println("Skip date: " + lessonDate);
                     flag = false;
                     continue;
                 } else {
