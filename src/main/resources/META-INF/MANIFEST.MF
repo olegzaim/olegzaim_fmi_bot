@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: MainClass
+Main-Class: org.fmibot.maven.app.MainClass
 Class-Path: java/
 
